@@ -32,11 +32,18 @@
     return _pathArray;
 }
 
+- (void)setImage:(UIImage *)image {
+    _image = image;
+    [self.pathArray addObject:_image];
+    [self setNeedsDisplay];
+}
+
 - (CGPoint)touchPointWithTouches:(NSSet *)touches {
     UITouch *touch = [touches anyObject];
     return [touch locationInView:self];
 }
 
+#pragma mark 点击屏幕开始画线
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     CGPoint touchPoint = [self touchPointWithTouches:touches];
     
@@ -46,38 +53,49 @@
     [_path moveToPoint:touchPoint];
 }
 
+#pragma mark 移动手指拖线
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
     CGPoint touchPoint = [self touchPointWithTouches:touches];
     [_path addLineToPoint:touchPoint];
     [self setNeedsDisplay];
 }
 
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-    for (FSPaintPath *path in _pathArray) {
-        [path.color set];
-        [path stroke];
-    }
-}
-
 - (void)awakeFromNib {
     _lineWidth = 2;
 }
 
+#pragma mark 清屏
 - (void)clearBoard {
     _pathArray = nil;
     [self setNeedsDisplay];
 }
 
+#pragma mark 撤销
 - (void)unDo {
     [_pathArray removeLastObject];
     [self setNeedsDisplay];
 }
 
+#pragma mark 橡皮擦
 - (void)eraser {
     self.color = [UIColor whiteColor];
 }
+
+
+// Only override drawRect: if you perform custom drawing.
+// An empty implementation adversely affects performance during animation.
+- (void)drawRect:(CGRect)rect {
+    // Drawing code
+    for (FSPaintPath *path in _pathArray) {
+        if ([path isKindOfClass:[UIImage class]]) {
+            UIImage *image = (UIImage *)path;
+            [image drawAtPoint:CGPointZero];
+        } else {
+            [path.color set];
+            [path stroke];
+        }
+    }
+}
+
 
 @end

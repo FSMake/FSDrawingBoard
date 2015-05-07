@@ -14,14 +14,12 @@
 
 @property (nonatomic, assign) CGFloat lineWidth;
 
+@property (nonatomic, strong) UIImage *image;
+
 - (void)clearBoard;
 
 - (void)unDo;
 
 - (void)eraser;
-
-- (void)photo;
-
-- (void)save;
 
 @end
